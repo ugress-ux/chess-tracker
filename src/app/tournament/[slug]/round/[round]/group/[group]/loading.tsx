@@ -23,7 +23,7 @@ export default function GroupLoading() {
         </div>
         <div className="border-b border-slate-800 flex gap-4 pb-0">
           {[80, 72, 68, 72].map((w, i) => (
-            <Skeleton key={i} className="h-10" style={{ width: w }} />
+            <div key={i} className="skeleton h-10" style={{ width: w }} />
           ))}
         </div>
         <SkeletonTable rows={10} />

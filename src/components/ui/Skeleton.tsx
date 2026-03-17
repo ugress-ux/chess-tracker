@@ -1,12 +1,14 @@
+import React from "react";
 import { cn } from "@/lib/utils";
 
 interface SkeletonProps {
   className?: string;
+  style?: React.CSSProperties;
 }
 
-export function Skeleton({ className }: SkeletonProps) {
+export function Skeleton({ className, style }: SkeletonProps) {
   return (
-    <div className={cn("skeleton h-4 w-full", className)} aria-hidden="true" />
+    <div className={cn("skeleton h-4 w-full", className)} style={style} aria-hidden="true" />
   );
 }
 

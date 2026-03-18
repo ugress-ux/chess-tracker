@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import { Search, ChevronRight, Shield, Clock, Zap, Trophy, History, Star } from "lucide-react";
 import { parseTournamentSlug } from "@/lib/chesscom/parsers";
 import { cn } from "@/lib/utils";
+import { saveRecent, loadRecent, clearRecent } from "@/lib/utils/recent";
+import type { RecentTournament } from "@/lib/utils/recent";
 
 const POPULAR_TOURNAMENTS = [
   { slug: "world-blitz-championship-2024", name: "World Blitz Championship 2024", type: "Blitz" },
@@ -15,27 +17,6 @@ const POPULAR_TOURNAMENTS = [
   { slug: "speed-chess-championship-2024", name: "Speed Chess Championship 2024", type: "Bullet" },
 ];
 
-const RECENT_KEY = "chess_tracker_recent";
-const MAX_RECENT = 8;
-
-interface RecentTournament {
-  slug: string;
-  name: string;
-  visitedAt: number;
-}
-
-export function saveRecent(slug: string, name: string) {
-  try {
-    const raw = localStorage.getItem(RECENT_KEY);
-    const existing: RecentTournament[] = raw ? JSON.parse(raw) : [];
-    const updated = [
-      { slug, name, visitedAt: Date.now() },
-      ...existing.filter((r) => r.slug !== slug),
-    ].slice(0, MAX_RECENT);
-    localStorage.setItem(RECENT_KEY, JSON.stringify(updated));
-  } catch {}
-}
-
 export default function HomePage() {
   const router = useRouter();
   const [input, setInput] = useState("");
@@ -43,10 +24,7 @@ export default function HomePage() {
   const [recent, setRecent] = useState<RecentTournament[]>([]);
 
   useEffect(() => {
-    try {
-      const raw = localStorage.getItem(RECENT_KEY);
-      setRecent(raw ? JSON.parse(raw) : []);
-    } catch {}
+    setRecent(loadRecent());
   }, []);
 
   function handleSubmit(e: FormEvent) {
@@ -64,8 +42,8 @@ export default function HomePage() {
     router.push(`/tournament/${slug}`);
   }
 
-  function clearRecent() {
-    localStorage.removeItem(RECENT_KEY);
+  function handleClearRecent() {
+    clearRecent();
     setRecent([]);
   }
 
@@ -132,7 +110,7 @@ export default function HomePage() {
                   <History className="w-4 h-4" />
                   Nylig besøkt
                 </div>
-                <button onClick={clearRecent} className="text-xs text-slate-600 hover:text-slate-400 transition-colors">
+                <button onClick={handleClearRecent} className="text-xs text-slate-600 hover:text-slate-400 transition-colors">
                   Tøm historikk
                 </button>
               </div>
